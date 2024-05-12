@@ -1,7 +1,13 @@
 ﻿namespace Listless;
 
+/// <summary>
+/// The application.
+/// </summary>
 public partial class App : Application
 {
+    /// <summary>
+    /// Create a new application.
+    /// </summary>
     public App()
     {
         InitializeComponent();
