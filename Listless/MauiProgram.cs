@@ -1,12 +1,9 @@
-﻿using Listless.Domain;
-using Listless.Persistence;
-
-using Microsoft.EntityFrameworkCore;
+﻿using Listless.Core;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 
 using MudBlazor.Services;
-
-using static Listless.Persistence.PersistenceRegistration;
+using static Listless.StartupExtensions;
 
 namespace Listless;
 
@@ -21,6 +18,12 @@ public static class MauiProgram
     /// <returns>A new MauiApp.</returns>
     public static MauiApp CreateMauiApp()
     {
+        var appData = FileSystem.AppDataDirectory;
+        var connectionString = $"Filename={appData}/Listless.db3";
+        Migration.runMigrations(connectionString);
+
+        using var dbConnection = new SqliteConnection(connectionString);
+        
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
@@ -31,10 +34,8 @@ public static class MauiProgram
 
         builder.Services.AddMauiBlazorWebView();
         builder.Services.AddMudServices();
-        builder.Services.RegisterDomainServices();
-        var appData = FileSystem.AppDataDirectory;
-        builder.Services.RegisterPersistenceServices(FileSystem.AppDataDirectory);
-
+        builder.Services.RegisterPersistenceServices(dbConnection);
+        
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
@@ -42,9 +43,6 @@ public static class MauiProgram
 
         var app = builder.Build();
 
-        var ctx = app.Services.GetRequiredService<ListlessContext>();
-        ctx.Database.Migrate();
-        ctx.Dispose();
 
         return app;
     }

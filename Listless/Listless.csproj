@@ -71,8 +71,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Listless.Domain\Listless.Domain.csproj" />
-      <ProjectReference Include="..\Listless.Persistence\Listless.Persistence.csproj" />
+      <ProjectReference Include="..\Listless.Core\Listless.Core.fsproj" />
     </ItemGroup>
 
 </Project>

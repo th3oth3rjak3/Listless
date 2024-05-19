@@ -1,5 +1,53 @@
 ﻿@page "/"
-
+@using Functional.Common
+@using Functional.Options
+@using Listless.Core
+@using static Listless.Core.Models
+@inject Contracts.IListRepository ListRepository
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+<ul>
+    @foreach (var list in lists)
+    {
+        <li>@formatList(list)</li>
+        <ul>
+            @foreach (var item in list.Items)
+            {
+                <li>@formatItem(item)</li>
+            }
+        </ul>
+    }
+</ul>
+
+@code {
+    //IEnumerable<UserList> Lists { get; set; } = Array.Empty<UserList>();
+
+    IEnumerable<UserList> lists = new List<UserList>();
+    protected override async Task OnInitializedAsync()
+    {
+        //var thing = new ListItem("name", false);
+        // var maybeList = await ListRepository.TryGetList(2);
+        // if (maybeList.IsSome())
+        // {
+        //     lists = new[] { maybeList.Value };
+        // }
+        // else
+        // {
+        //     lists = [ new UserList(0, "No list found", new List<ListItem>())];
+        // }
+        lists = await ListRepository.GetAllLists();
+        StateHasChanged();
+    }
+
+    string formatList(UserList list)
+    {
+        return $"{list.Name} - {list.Id}";
+    }
+
+    string formatItem(ListItem item)
+    {
+        return $"{item.Name}({item.Id}) - {item.IsComplete}";
+    }
+}
